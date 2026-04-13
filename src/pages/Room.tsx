@@ -45,9 +45,22 @@ const Room = () => {
   const [proModal, setProModal] = useState<{ open: boolean; feature?: string }>({ open: false });
   const [awaitingLogoVibe, setAwaitingLogoVibe] = useState(false);
   const [awaitingBuildDesc, setAwaitingBuildDesc] = useState(false);
+  const [showCommands, setShowCommands] = useState(false);
   const { user: authUser } = useAuth();
   const bottomRef = useRef<HTMLDivElement>(null);
   const hasShownInvite = useRef(false);
+
+  const COMMANDS_LIST = [
+    { cmd: '/logo', desc: 'Generate an AI logo for your site' },
+    { cmd: '/remix', desc: 'Redesign your site with a random aesthetic' },
+    { cmd: '/roast', desc: 'Get a brutal (but helpful) startup roast' },
+    { cmd: '/waitlist', desc: 'Enable email collection on your site' },
+    { cmd: '/analytics', desc: 'View page views, signups & referrers' },
+    { cmd: '/emails', desc: 'List all waitlist signups with copy button' },
+    { cmd: '/feedback', desc: 'Add a feedback widget to your site' },
+    { cmd: '/build', desc: 'Turn your idea into a real app (Pro)' },
+    { cmd: '/update', desc: 'Update your deployed app (Pro)' },
+  ];
 
   // Check localStorage for existing user
   useEffect(() => {
