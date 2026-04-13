@@ -49,6 +49,38 @@ const Room = () => {
     ensureRoom();
   }, [roomId]);
 
+  // Check if room is saved
+  useEffect(() => {
+    if (!authUser || !roomId) return;
+    const check = async () => {
+      const { data } = await supabase
+        .from('saved_rooms')
+        .select('id')
+        .eq('user_id', authUser.id)
+        .eq('room_id', roomId)
+        .maybeSingle();
+      setIsSaved(!!data);
+    };
+    check();
+  }, [authUser, roomId]);
+
+  const toggleSave = async () => {
+    if (!authUser) {
+      toast('Sign in to save rooms', { action: { label: 'Sign In', onClick: () => navigate('/auth') } });
+      return;
+    }
+    if (!roomId) return;
+    if (isSaved) {
+      await supabase.from('saved_rooms').delete().eq('user_id', authUser.id).eq('room_id', roomId);
+      setIsSaved(false);
+      toast('Room unsaved');
+    } else {
+      await supabase.from('saved_rooms').insert({ user_id: authUser.id, room_id: roomId });
+      setIsSaved(true);
+      toast('Room saved! ⭐');
+    }
+  };
+
   // Load messages & subscribe to realtime
   useEffect(() => {
     if (!roomId || !user) return;
@@ -206,15 +238,23 @@ const Room = () => {
             </span>
           )}
         </div>
-        <button
-          onClick={() => {
-            navigator.clipboard.writeText(window.location.href);
-            toast('Link copied! 🔗');
-          }}
-          className="text-primary text-sm font-medium hover:opacity-80"
-        >
-          Copy Link
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleSave}
+            className={`text-sm font-medium hover:opacity-80 transition-opacity ${isSaved ? 'text-accent' : 'text-muted-foreground'}`}
+          >
+            {isSaved ? '⭐ Saved' : '☆ Save'}
+          </button>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              toast('Link copied! 🔗');
+            }}
+            className="text-primary text-sm font-medium hover:opacity-80"
+          >
+            Copy Link
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
