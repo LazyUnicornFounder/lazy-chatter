@@ -18,7 +18,7 @@ const Index = () => {
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
-        <span className="text-xl font-bold text-primary flex items-center gap-2"><span className="text-xl font-bold text-primary flex items-center gap-2">Lazy Chatter 🚀 <span className="text-[10px] font-semibold bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full uppercase tracking-wider">Beta</span></span> <span className="text-[10px] font-semibold bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full uppercase tracking-wider">Beta</span></span>
+        <span className="text-xl font-bold text-primary flex items-center gap-2">Lazy Chatter 🚀 <span className="text-[10px] font-semibold bg-[hsl(var(--cyan))] text-primary-foreground px-1.5 py-0.5 rounded-full uppercase tracking-wider">Beta</span></span>
         <div className="flex items-center gap-3">
           {user ? (
             <>
