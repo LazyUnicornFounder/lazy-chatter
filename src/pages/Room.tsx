@@ -157,6 +157,18 @@ const Room = () => {
           content: `🎉 ${data.product_name} is live!\n${data.deployed_url}`,
           type: 'ship-success',
         });
+      } else if (data?.html) {
+        // No Vercel token — show preview with HTML blob
+        const blob = new Blob([data.html], { type: 'text/html' });
+        const previewUrl = URL.createObjectURL(blob);
+        setRoomData({ shipped: true, deployed_url: previewUrl });
+        await supabase.from('messages').insert({
+          room_id: roomId,
+          sender_name: 'system',
+          sender_emoji: '',
+          content: `🎉 ${data.product_name} is ready! (Preview — add Vercel token for live deploy)\n${previewUrl}`,
+          type: 'ship-success',
+        });
       }
     } catch (e) {
       console.error(e);
