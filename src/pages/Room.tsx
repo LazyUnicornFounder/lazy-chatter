@@ -673,6 +673,43 @@ const Room = () => {
         />
       )}
 
+      {/* Solo mode AI banner */}
+      {!aiMode && messages.filter(m => m.type === 'chat' && m.sender_name !== chatUser.name).length === 0 && messages.filter(m => m.type === 'chat').length >= 1 && (
+        <div className="mx-4 mt-2 mb-1">
+          <div className="glass-card px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🤖</span>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Flying solo?</p>
+                <p className="text-xs text-muted-foreground">Chat with AI Copilot to brainstorm your idea</p>
+              </div>
+            </div>
+            <button
+              onClick={() => { setAiMode(true); toast('🤖 AI Copilot activated!'); }}
+              className="bg-gradient-to-r from-[hsl(var(--cyan))] to-primary text-primary-foreground font-bold px-4 py-2 rounded-xl text-xs hover:opacity-90 transition-opacity"
+            >
+              Enable AI
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* AI mode indicator */}
+      {aiMode && (
+        <div className="mx-4 mt-2 mb-1 flex items-center justify-between glass-card px-4 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">🤖</span>
+            <span className="text-xs font-semibold text-[hsl(var(--cyan))]">AI Copilot active</span>
+          </div>
+          <button
+            onClick={() => { setAiMode(false); toast('AI Copilot disabled'); }}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Disable
+          </button>
+        </div>
+      )}
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {messages.map((msg) => {
