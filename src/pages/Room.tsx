@@ -681,8 +681,8 @@ const Room = () => {
         />
       )}
 
-      {/* Solo mode AI banner */}
-      {!aiMode && messages.filter(m => m.type === 'chat' && m.sender_name !== chatUser.name).length === 0 && messages.filter(m => m.type === 'chat').length >= 1 && (
+      {/* Solo mode AI banner — show immediately */}
+      {!aiMode && (
         <div className="mx-4 mt-2 mb-1">
           <div className="glass-card px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
