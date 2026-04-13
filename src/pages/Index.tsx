@@ -58,7 +58,7 @@ const Index = () => {
           Talk about it.<br />Ship it. 🛸
         </h1>
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-          Chat with your friend about an idea. Hit one button. Live website in 30 seconds.
+          Chat with your friends about an idea. Hit one button. Live website in 30 seconds.
         </p>
         <button
           onClick={handleStartRoom}
