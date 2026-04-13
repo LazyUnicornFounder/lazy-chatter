@@ -194,7 +194,7 @@ const Room = () => {
       <div className="glass-card rounded-none border-x-0 border-t-0 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/')} className="text-primary font-bold text-sm">
-            LazyShip 🚀
+            Lazy Chatter 🚀
           </button>
           <span className="text-muted-foreground text-sm">Room: {roomId}</span>
           {roomData?.shipped && (
