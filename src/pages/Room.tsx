@@ -274,7 +274,7 @@ const Room = () => {
             const url = lines[1];
             return (
               <div key={msg.id} className="flex justify-center py-4">
-                <div className="glass-card p-6 max-w-sm w-full text-center space-y-3">
+                <div className="glass-card p-6 max-w-md w-full text-center space-y-4">
                   <p className="text-lg font-bold text-foreground">{title}</p>
                   {url && (
                     <>
@@ -305,6 +305,35 @@ const Room = () => {
                       </div>
                     </>
                   )}
+
+                  {/* Next steps */}
+                  <div className="border-t border-white/10 pt-4 mt-4">
+                    <p className="text-xs text-muted-foreground mb-3">What's next? 🚀</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {[
+                        { label: '🎨 Change the design', prompt: 'make the design more colorful and bold' },
+                        { label: '📝 Add a signup form', prompt: 'add an email signup form to the landing page' },
+                        { label: '📊 Add pricing section', prompt: 'add a pricing section with 3 tiers' },
+                        { label: '💬 Add testimonials', prompt: 'add a testimonials section with fake reviews' },
+                        { label: '🔄 Start fresh', prompt: '' },
+                      ].map((action) => (
+                        <button
+                          key={action.label}
+                          onClick={() => {
+                            if (action.prompt) {
+                              setInput(action.prompt);
+                            } else {
+                              const newId = Math.random().toString(36).substring(2, 8);
+                              navigate(`/room/${newId}`);
+                            }
+                          }}
+                          className="text-xs bg-white/5 border border-white/10 text-foreground px-3 py-1.5 rounded-full hover:bg-white/10 hover:border-white/20 transition-all"
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
