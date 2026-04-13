@@ -46,6 +46,8 @@ const Room = () => {
   const [awaitingLogoVibe, setAwaitingLogoVibe] = useState(false);
   const [awaitingBuildDesc, setAwaitingBuildDesc] = useState(false);
   const [showCommands, setShowCommands] = useState(false);
+  const [aiMode, setAiMode] = useState(false);
+  const [aiTyping, setAiTyping] = useState(false);
   const { user: authUser } = useAuth();
   const bottomRef = useRef<HTMLDivElement>(null);
   const hasShownInvite = useRef(false);
@@ -234,6 +236,28 @@ const Room = () => {
       content,
       type: 'chat',
     });
+
+    // AI copilot auto-reply
+    if (aiMode) {
+      setAiTyping(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('ai-chat', {
+          body: { room_id: roomId, user_message: content },
+        });
+        if (error) throw error;
+        await supabase.from('messages').insert({
+          room_id: roomId,
+          sender_name: 'AI Copilot',
+          sender_emoji: '🤖',
+          content: data?.reply || "hmm let me think... 🤔",
+          type: 'ai-chat',
+        });
+      } catch (e) {
+        console.error('AI chat error:', e);
+      } finally {
+        setAiTyping(false);
+      }
+    }
   };
 
   const handleCommand = async (cmd: string) => {
@@ -649,6 +673,43 @@ const Room = () => {
         />
       )}
 
+      {/* Solo mode AI banner */}
+      {!aiMode && messages.filter(m => m.type === 'chat' && m.sender_name !== chatUser.name).length === 0 && messages.filter(m => m.type === 'chat').length >= 1 && (
+        <div className="mx-4 mt-2 mb-1">
+          <div className="glass-card px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🤖</span>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Flying solo?</p>
+                <p className="text-xs text-muted-foreground">Chat with AI Copilot to brainstorm your idea</p>
+              </div>
+            </div>
+            <button
+              onClick={() => { setAiMode(true); toast('🤖 AI Copilot activated!'); }}
+              className="bg-gradient-to-r from-[hsl(var(--cyan))] to-primary text-primary-foreground font-bold px-4 py-2 rounded-xl text-xs hover:opacity-90 transition-opacity"
+            >
+              Enable AI
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* AI mode indicator */}
+      {aiMode && (
+        <div className="mx-4 mt-2 mb-1 flex items-center justify-between glass-card px-4 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">🤖</span>
+            <span className="text-xs font-semibold text-[hsl(var(--cyan))]">AI Copilot active</span>
+          </div>
+          <button
+            onClick={() => { setAiMode(false); toast('AI Copilot disabled'); }}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Disable
+          </button>
+        </div>
+      )}
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {messages.map((msg) => {
@@ -811,18 +872,22 @@ const Room = () => {
             );
           }
 
-          const isMe = msg.sender_name === chatUser.name && msg.sender_emoji === chatUser.emoji;
+          // AI copilot messages get special styling
+          const isAi = msg.type === 'ai-chat' || msg.sender_name === 'AI Copilot';
+          const isMe = !isAi && msg.sender_name === chatUser.name && msg.sender_emoji === chatUser.emoji;
           return (
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[75%] ${isMe ? 'items-end' : 'items-start'}`}>
                 <div className={`flex items-center gap-1 mb-1 text-xs text-muted-foreground ${isMe ? 'justify-end' : ''}`}>
                   <span>{msg.sender_emoji}</span>
-                  <span>{msg.sender_name}</span>
+                  <span>{isAi ? <span className="text-[hsl(var(--cyan))]">{msg.sender_name}</span> : msg.sender_name}</span>
                 </div>
                 <div
                   className={`px-4 py-2.5 rounded-2xl text-sm ${
                     isMe
                       ? 'bg-primary text-primary-foreground'
+                      : isAi
+                      ? 'bg-[hsl(var(--cyan))]/10 border border-[hsl(var(--cyan))]/20 text-foreground'
                       : 'bg-white/10 text-foreground'
                   }`}
                 >
@@ -835,6 +900,24 @@ const Room = () => {
             </div>
           );
         })}
+        {/* AI typing indicator */}
+        {aiTyping && (
+          <div className="flex justify-start">
+            <div className="max-w-[75%]">
+              <div className="flex items-center gap-1 mb-1 text-xs text-muted-foreground">
+                <span>🤖</span>
+                <span>AI Copilot</span>
+              </div>
+              <div className="px-4 py-3 rounded-2xl bg-[hsl(var(--cyan))]/10 border border-[hsl(var(--cyan))]/20">
+                <div className="flex gap-1">
+                  <span className="typing-dot w-2 h-2 rounded-full bg-[hsl(var(--cyan))]" />
+                  <span className="typing-dot w-2 h-2 rounded-full bg-[hsl(var(--cyan))]" />
+                  <span className="typing-dot w-2 h-2 rounded-full bg-[hsl(var(--cyan))]" />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 
