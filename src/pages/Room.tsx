@@ -72,6 +72,7 @@ const Room = () => {
   }, []);
 
   // Ensure room exists
+  const roomReady = useRef(false);
   useEffect(() => {
     if (!roomId) return;
     const ensureRoom = async () => {
@@ -81,6 +82,7 @@ const Room = () => {
       } else {
         setRoomData({ shipped: data.shipped, deployed_url: data.deployed_url });
       }
+      roomReady.current = true;
     };
     ensureRoom();
   }, [roomId]);
@@ -151,8 +153,14 @@ const Room = () => {
     };
     loadMessages();
 
-    // Send join system message
+    // Send join system message — wait for room to exist
     const sendJoin = async () => {
+      // Wait for room to be created
+      let retries = 0;
+      while (!roomReady.current && retries < 20) {
+        await new Promise(r => setTimeout(r, 100));
+        retries++;
+      }
       await supabase.from('messages').insert({
         room_id: roomId,
         sender_name: 'system',
@@ -673,8 +681,8 @@ const Room = () => {
         />
       )}
 
-      {/* Solo mode AI banner */}
-      {!aiMode && messages.filter(m => m.type === 'chat' && m.sender_name !== chatUser.name).length === 0 && messages.filter(m => m.type === 'chat').length >= 1 && (
+      {/* Solo mode AI banner — show immediately */}
+      {!aiMode && (
         <div className="mx-4 mt-2 mb-1">
           <div className="glass-card px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
