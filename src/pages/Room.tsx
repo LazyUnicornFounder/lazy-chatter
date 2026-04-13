@@ -236,6 +236,28 @@ const Room = () => {
       content,
       type: 'chat',
     });
+
+    // AI copilot auto-reply
+    if (aiMode) {
+      setAiTyping(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('ai-chat', {
+          body: { room_id: roomId, user_message: content },
+        });
+        if (error) throw error;
+        await supabase.from('messages').insert({
+          room_id: roomId,
+          sender_name: 'AI Copilot',
+          sender_emoji: '🤖',
+          content: data?.reply || "hmm let me think... 🤔",
+          type: 'ai-chat',
+        });
+      } catch (e) {
+        console.error('AI chat error:', e);
+      } finally {
+        setAiTyping(false);
+      }
+    }
   };
 
   const handleCommand = async (cmd: string) => {
