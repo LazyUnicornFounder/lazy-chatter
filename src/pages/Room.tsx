@@ -46,6 +46,8 @@ const Room = () => {
   const [awaitingLogoVibe, setAwaitingLogoVibe] = useState(false);
   const [awaitingBuildDesc, setAwaitingBuildDesc] = useState(false);
   const [showCommands, setShowCommands] = useState(false);
+  const [aiMode, setAiMode] = useState(false);
+  const [aiTyping, setAiTyping] = useState(false);
   const { user: authUser } = useAuth();
   const bottomRef = useRef<HTMLDivElement>(null);
   const hasShownInvite = useRef(false);
