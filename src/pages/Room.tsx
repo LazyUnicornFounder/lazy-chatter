@@ -872,18 +872,22 @@ const Room = () => {
             );
           }
 
-          const isMe = msg.sender_name === chatUser.name && msg.sender_emoji === chatUser.emoji;
+          // AI copilot messages get special styling
+          const isAi = msg.type === 'ai-chat' || msg.sender_name === 'AI Copilot';
+          const isMe = !isAi && msg.sender_name === chatUser.name && msg.sender_emoji === chatUser.emoji;
           return (
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[75%] ${isMe ? 'items-end' : 'items-start'}`}>
                 <div className={`flex items-center gap-1 mb-1 text-xs text-muted-foreground ${isMe ? 'justify-end' : ''}`}>
                   <span>{msg.sender_emoji}</span>
-                  <span>{msg.sender_name}</span>
+                  <span>{isAi ? <span className="text-[hsl(var(--cyan))]">{msg.sender_name}</span> : msg.sender_name}</span>
                 </div>
                 <div
                   className={`px-4 py-2.5 rounded-2xl text-sm ${
                     isMe
                       ? 'bg-primary text-primary-foreground'
+                      : isAi
+                      ? 'bg-[hsl(var(--cyan))]/10 border border-[hsl(var(--cyan))]/20 text-foreground'
                       : 'bg-white/10 text-foreground'
                   }`}
                 >
