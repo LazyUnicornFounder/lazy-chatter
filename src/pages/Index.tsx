@@ -1,11 +1,24 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingEmojis from '@/components/FloatingEmojis';
 import DemoChat from '@/components/DemoChat';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [roomCount, setRoomCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const { count } = await supabase
+        .from('rooms')
+        .select('*', { count: 'exact', head: true });
+      setRoomCount(count ?? 0);
+    };
+    load();
+  }, []);
 
   const handleStartRoom = () => {
     const id = Math.random().toString(36).substring(2, 8);
@@ -69,6 +82,11 @@ const Index = () => {
         <p className="text-sm text-muted-foreground mt-4">
           no sign up. no download. just vibes.
         </p>
+        {roomCount !== null && roomCount > 0 && (
+          <p className="text-sm text-muted-foreground mt-2">
+            <span className="text-primary font-bold">{roomCount.toLocaleString()}</span> rooms created so far 🔥
+          </p>
+        )}
       </section>
 
       {/* Demo Chat */}
