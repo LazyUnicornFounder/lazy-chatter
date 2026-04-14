@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import DemoChat from '@/components/DemoChat';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import OpenSourceBanner from "@/components/OpenSourceBanner";
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -121,6 +122,7 @@ const Index = () => {
       <footer className="relative z-10 text-center py-12 text-muted-foreground text-sm">
         made for people with more ideas than time 😴
       </footer>
+          <OpenSourceBanner />
     </div>
   );
 };
